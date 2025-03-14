@@ -97,8 +97,9 @@ services:
     labels:
       caddy: ${HTTP_PROTOCOL:-http}://${SERVER_IP:?请在 .env 中设置 SERVER_IP 后再启动服务}
       caddy.reverse_proxy: "{{upstreams 8080}}"
-    db:
-      condition: service_healthy
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - wacmk-network
 
