@@ -58,7 +58,7 @@ services:
     container_name: wacmk-dn-server
     volumes:
       - ${SERVER_DATA:-./server}:/data
-      - ${SERVER_LOG:-./}:/logs
+      - ${SERVER_LOG:-./logs}:/logs
     environment:
       - INIT_MODE=${INIT_MODE:-false}
       - UPDATE_MODE=${UPDATE_MODE:-false}
