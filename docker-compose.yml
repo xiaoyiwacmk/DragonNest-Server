@@ -27,8 +27,10 @@ services:
   redis:
     image: redis
     container_name: wacmk-redis
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-iguozicc}
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:-iguozicc}"
     networks:
       - wacmk-network
 
