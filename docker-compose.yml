@@ -56,7 +56,7 @@ services:
       retries: 3
 
   dn-server:
-    image: wacmk-dn-${SERVER_TYPE:-fwl}:${SERVER_VERSION:-1.0.0}
+    image: docker.wacmk.cn/wacmk-dn-${SERVER_TYPE:-fwl}:${SERVER_VERSION:-latest}
     container_name: wacmk-dn-server
     volumes:
       - ${SERVER_DATA:-./server}:/data
