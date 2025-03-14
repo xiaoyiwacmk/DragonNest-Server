@@ -1,0 +1,107 @@
+services:
+  db:
+    image: mariadb:10.11
+    container_name: wacmk-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - MYSQL_LOG_CONSOLE=true
+      - MARIADB_AUTO_UPGRADE=1
+    volumes:
+      - "${MYSQL_DATA:-./db}:/var/lib/mysql"
+    networks:
+      - wacmk-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/usr/local/bin/healthcheck.sh",
+          "--connect",
+          "--mariadbupgrade",
+          "--innodb_initialized",
+        ]
+      interval: 20s
+      start_period: 30s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis
+    container_name: wacmk-redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-iguozicc}
+    networks:
+      - wacmk-network
+
+  caddy:
+    image: lucaslorentz/caddy-docker-proxy:2.9
+    restart: unless-stopped
+    container_name: wacmk-caddy
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      - CADDY_INGRESS_NETWORKS=wacmk-network
+    volumes:
+      - ${DOCKER_SOCK_PATH:-/var/run/docker.sock}:/var/run/docker.sock
+      - ${CADDY_DATA:-./caddy}:/data/caddy
+    networks:
+      - wacmk-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:2019/metrics || exit 1"]
+      start_period: 20s
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  dn-server:
+    image: wacmk-dn-${SERVER_TYPE:-fwl}:${SERVER_VERSION:-1.0.0}
+    container_name: wacmk-dn-server
+    volumes:
+      - ${SERVER_DATA:-./server}:/data
+      - ${SERVER_LOG:-./}
+    environment:
+      - INIT_MODE=${INIT_MODE:-false}
+      - UPDATE_MODE=${UPDATE_MODE:-false}
+      - MYSQL_HOST=${MYSQL_HOST:-db}
+      - MYSQL_USER=${MYSQL_USER:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_DB_LOGIN=${MYSQL_DB_LOGIN:-login}
+      - MYSQL_DB_WORLD=${MYSQL_DB_WORLD:-world}
+      - MYSQL_DB_GLOBALWORLD=${MYSQL_DB_GLOBALWORLD:-globalworld}
+      - MYSQL_DB_DRAGON_NEST_ONLINE=${MYSQL_DB_DRAGON_NEST_ONLINE:-db_Dragon_Nest_online}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-iguozicc}
+      - SERVER_IP=${SERVER_IP:?请在 .env 中设置 SERVER_IP 后再启动服务}
+      - SERVER_PORT=${SERVER_PORT:-10201}
+      - SERVER_NAME=${SERVER_NAME:-WACMKDragonNest}
+      - SERVER_REGION_NAME=${SERVER_REGION_NAME:-WACMKDragonNest}
+      - SERVER_OPEN_TIME=${SERVER_OPEN_TIME:-2020-04-01 16:00:00}
+      - SERVER_FULL_REGISTER_TIME=${SERVER_FULL_REGISTER_TIME:-2020-04-01 16:10:00}
+      - ID_IP_LINK_PORT=${ID_IP_LINK_PORT:-58003}
+    ports:
+      - 10201:10201
+      - 58003:58003
+    depends_on:
+      - db
+      - redis
+    networks:
+      - wacmk-network
+
+  dn-web:
+    image: trafex/php-nginx
+    container_name: wacmk-dn-web
+    volumes:
+      - ${WEB_DATA:-./www}:/var/www/html
+    labels:
+      caddy: ${HTTP_PROTOCOL:-http}://${SERVER_IP:?请在 .env 中设置 SERVER_IP 后再启动服务}
+      caddy.reverse_proxy: "{{upstreams 8080}}"
+    depends_on:
+      - db
+    networks:
+      - wacmk-network
+
+networks:
+  wacmk-network:
+    name: wacmk-network
