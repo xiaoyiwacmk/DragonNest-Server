@@ -33,7 +33,7 @@ services:
       - wacmk-network
 
   caddy:
-    image: lucaslorentz/caddy-docker-proxy:2.9
+    image: lucaslorentz/caddy-docker-proxy:2.9-alpine
     restart: unless-stopped
     container_name: wacmk-caddy
     ports:
