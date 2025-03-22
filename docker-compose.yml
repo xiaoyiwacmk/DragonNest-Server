@@ -62,8 +62,8 @@ services:
       - SERVER_FULL_REGISTER_TIME=${SERVER_FULL_REGISTER_TIME:-2020-04-01 16:10:00}
       - ID_IP_LINK_PORT=${ID_IP_LINK_PORT:-58003}
     ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
-      - ${ID_IP_LINK_PORT}:${ID_IP_LINK_PORT}
+      - ${SERVER_PORT:-10201}:${SERVER_PORT:-10201}
+      - ${ID_IP_LINK_PORT:-58003}:${ID_IP_LINK_PORT:-58003}
     depends_on:
       db:
         condition: service_healthy
