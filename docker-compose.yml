@@ -1,6 +1,6 @@
 services:
   db:
-    image: mariadb:10.11
+    image: docker.wacmk.cn/mariadb:10.11
     container_name: wacmk-mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD:-123456}
@@ -25,7 +25,7 @@ services:
       retries: 10
 
   redis:
-    image: redis
+    image: docker.wacmk.cn/redis
     container_name: wacmk-redis
     command:
       - /bin/sh
@@ -71,7 +71,7 @@ services:
       - wacmk-network
 
   dn-web:
-    image: navidonskis/nginx-php5.6
+    image: docker.wacmk.cn/nginx-php
     container_name: wacmk-dn-web
     volumes:
       - ${WEB_DATA:-./www}:/var/www
