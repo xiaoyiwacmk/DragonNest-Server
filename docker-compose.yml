@@ -75,6 +75,15 @@ services:
     container_name: wacmk-dn-web
     volumes:
       - ${WEB_DATA:-./www}:/var/www
+    environment:
+      - INIT_MODE=${INIT_MODE:-false}
+      - UPDATE_MODE=${UPDATE_MODE:-false}
+      - MYSQL_HOST=${MYSQL_HOST:-db}
+      - MYSQL_USER=${MYSQL_USER:-root}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-123456}
+      - MYSQL_PORT=${MYSQL_PORT:-3306}
+      - MYSQL_DB_LOGIN=${MYSQL_DB_LOGIN:-login}
+      - MYSQL_DB_WORLD=${MYSQL_DB_WORLD:-world}
     ports:
       - ${WEB_PORT:-80}:80
     depends_on:
