@@ -1,6 +1,6 @@
 services:
   db:
-    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest/}${MYSQL_IMAGE:-mariadb}
+    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest}/${MYSQL_IMAGE:-mariadb}
     container_name: wacmk-mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD:-123456}
@@ -25,7 +25,7 @@ services:
       retries: 10
 
   redis:
-    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest/}${REDIS_IMAGE:-redis}
+    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest}/${REDIS_IMAGE:-redis}
     container_name: wacmk-redis
     command:
       - /bin/sh
@@ -35,7 +35,7 @@ services:
       - wacmk-network
 
   dn-server:
-    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest/}wacmk-dn-${SERVER_TYPE:-fwl}:${SERVER_VERSION:-latest}
+    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest}/wacmk-dn-${SERVER_TYPE:-fwl}:${SERVER_VERSION:-latest}
     container_name: wacmk-dn-server
     volumes:
       - ${SERVER_DATA:-./server}:/data
@@ -71,7 +71,7 @@ services:
       - wacmk-network
 
   dn-web:
-    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest/}wacmk-dn-${SERVER_TYPE:-fwl}-web:${SERVER_VERSION:-latest}
+    image: ${REGISTRY:-docker.wacmk.icu/wacmk-dragon-nest}/wacmk-dn-${SERVER_TYPE:-fwl}-web:${SERVER_VERSION:-latest}
     container_name: wacmk-dn-web
     volumes:
       - ${WEB_DATA:-./www}:/var/www
